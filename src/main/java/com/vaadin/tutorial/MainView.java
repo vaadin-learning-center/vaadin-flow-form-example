@@ -4,10 +4,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Route("")
-@StyleSheet("frontend://styles/styles.css")
 public class MainView extends VerticalLayout {
 
   private List<SnackOrder> snackOrders = new LinkedList<>();
@@ -104,9 +103,9 @@ public class MainView extends VerticalLayout {
     });
 
     // Wrap components in layouts
-    Div formLayout = new Div(nameField, quantityField, snackTypeSelect, snackSelect, orderButton);
+    HorizontalLayout formLayout = new HorizontalLayout(nameField, quantityField, snackTypeSelect, snackSelect, orderButton);
     Div wrapperLayout = new Div(formLayout, errorsLayout);
-    formLayout.addClassName("form");
+    formLayout.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
     wrapperLayout.setWidth("100%");
 
     return wrapperLayout;
