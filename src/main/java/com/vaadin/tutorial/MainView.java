@@ -13,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.validator.IntegerRangeValidator;
 import com.vaadin.flow.router.Route;
 
 import java.util.*;
@@ -26,8 +27,10 @@ public class MainView extends VerticalLayout {
   private Grid<SnackOrder> snackOrderGrid = new Grid<>(SnackOrder.class);
 
   public MainView() {
-    add(new H1("Snack order"));
-    add(buildForm(), snackOrderGrid);
+    add(
+        new H1("Snack order"),
+        buildForm(),
+        snackOrderGrid);
   }
 
   private Component buildForm() {
@@ -50,27 +53,28 @@ public class MainView extends VerticalLayout {
     quantityField.setPreventInvalidInput(true);
     orderButton.setEnabled(false);
     orderButton.setThemeName("primary");
-    snackSelect.setEnabled(false);
 
     // Only enable snack selection after a type has been selected.
     // Populate the snack alternatives based on the type.
+    snackSelect.setEnabled(false);
     snackTypeSelect.addValueChangeListener(e -> {
       String type = e.getValue();
       snackSelect.setEnabled(type != null && !type.isEmpty());
       if (type != null && !type.isEmpty()) {
+        snackSelect.setValue("");
         snackSelect.setItems(snacks.get(type));
       }
     });
 
     // Create bindings between UI fields and the SnackOrder data model
     Binder<SnackOrder> binder = new Binder<>(SnackOrder.class);
-    binder.readBean(new SnackOrder());
     binder.forField(nameField)
         .asRequired("Name is required")
         .bind("name");
     binder.forField(quantityField)
         .asRequired()
         .withConverter(new StringToIntegerConverter("Quantity must be a number"))
+        .withValidator(new IntegerRangeValidator("Quantity must be at least 1", 1, Integer.MAX_VALUE))
         .bind("quantity");
     binder.forField(snackSelect)
         .asRequired("Please choose a snack")
@@ -85,6 +89,7 @@ public class MainView extends VerticalLayout {
           orderButton.setEnabled(!status.hasValidationErrors() && !emptyFields);
         }
     );
+
 
     // Process order
     orderButton.addClickListener(click -> {
